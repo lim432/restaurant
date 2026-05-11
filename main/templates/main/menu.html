@@ -1,0 +1,926 @@
+{% load static %}
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kunefezade Menu</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tooplate-crispy-kitchen.css' %}">
+    <style>
+        .cart-badge {
+            position: relative;
+            display: inline-block;
+        }
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #f59e0b;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        /* Стили для поиска */
+        .search-container {
+            max-width: 500px;
+            margin: 0 auto 40px auto;
+            position: relative;
+        }
+        .search-input {
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 50px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        .search-input:focus {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            pointer-events: none;
+        }
+        .search-clear {
+            position: absolute;
+            right: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            font-size: 18px;
+            display: none;
+            padding: 5px;
+        }
+        .search-clear:hover {
+            color: #ef4444;
+        }
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            background: #f9fafb;
+            border-radius: 20px;
+            color: #6b7280;
+        }
+        .search-highlight {
+            background-color: #fef3c7;
+            border-radius: 4px;
+            padding: 0 2px;
+        }
+        .category-section {
+            transition: all 0.3s ease;
+        }
+        .category-section.hide-category {
+            display: none;
+        }
+        
+        .menu-table {
+            width: 100%;
+            min-width: 600px;
+        }
+        .menu-row {
+            display: grid;
+            grid-template-columns: 80px 1fr 100px 150px;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #edf2f7;
+            transition: background-color 0.2s ease;
+            cursor: pointer;
+        }
+        .menu-row:hover {
+            background-color: #fefce8;
+        }
+        .menu-row.hide-item {
+            display: none;
+        }
+        .menu-img {
+            width: 70px;
+            height: 70px;
+            border-radius: 14px;
+            overflow: hidden;
+            background-color: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .menu-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .menu-info h5 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0 0 0.25rem 0;
+            color: #111827;
+        }
+        .menu-info .desc {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin: 0;
+        }
+        .menu-price {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #b45309;
+            white-space: nowrap;
+        }
+        .menu-action button {
+            background-color: #f59e0b;
+            border: none;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 0.6rem 1rem;
+            border-radius: 40px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+        .menu-action button:hover {
+            background-color: #d97706;
+            transform: translateY(-1px);
+        }
+        .menu-action button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .toast-message {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            z-index: 9999;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* ИСПРАВЛЕННЫЕ СТИЛИ ДЛЯ МОДАЛЬНОГО ОКНА - ФОТО ТЕПЕРЬ ВПИСЫВАЕТСЯ ИДЕАЛЬНО */
+        .modal-container {
+            max-width: 950px;
+            width: 95%;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .modal-body-layout {
+            display: flex;
+            height: 85vh;
+            min-height: 450px;
+            overflow: hidden;
+        }
+
+        /* ЛЕВАЯ ЧАСТЬ (ФОТО) - ИДЕАЛЬНОЕ ВПИСЫВАНИЕ */
+        .modal-left {
+            flex: 1;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* САМА КАРТИНКА - СОХРАНЯЕТ ПРОПОРЦИИ И ВСЕГДА ПОМЕЩАЕТСЯ */
+        .modal-left img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: contain;
+            object-position: center;
+        }
+
+        /* ПРАВАЯ ЧАСТЬ */
+        .modal-right {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: white;
+        }
+        
+        .modal-close {
+            position: sticky;
+            top: 10px;
+            right: 10px;
+            float: right;
+            background: white;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        .modal-close:hover {
+            background: #f3f4f6;
+        }
+
+        .modal-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+        }
+        .modal-description {
+            color: #6b7280;
+            line-height: 1.5;
+        }
+        .modal-price-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            padding: 15px 0;
+            border-top: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .modal-price {
+            font-size: 28px;
+            font-weight: 800;
+            color: #b45309;
+        }
+        .modal-add-to-cart {
+            background: #f59e0b;
+            border: none;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 12px 28px;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+        .modal-add-to-cart:hover {
+            background-color: #d97706;
+        }
+        .reviews-section {
+            margin-top: 20px;
+            padding-top: 20px;
+        }
+        .review-item {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+        .review-author {
+            font-weight: 600;
+            color: #374151;
+        }
+        .review-rating {
+            color: #f59e0b;
+            margin-left: 10px;
+        }
+        .review-text {
+            margin-top: 8px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .review-date {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-top: 5px;
+        }
+        .add-review-form textarea {
+            width: 100%;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 10px;
+            resize: vertical;
+        }
+        .rating-select {
+            display: flex;
+            gap: 8px;
+            margin: 10px 0;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+        .rating-select input {
+            display: none;
+        }
+        .rating-select label {
+            font-size: 32px;
+            color: #d1d5db;
+            cursor: pointer;
+        }
+        .rating-select label:hover,
+        .rating-select label:hover ~ label,
+        .rating-select input:checked ~ label {
+            color: #f59e0b;
+        }
+        .btn-submit-review {
+            background: #f59e0b;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        @media (max-width: 768px) {
+            .menu-table {
+                min-width: auto;
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            .menu-row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.75rem 1rem;
+                padding: 1rem;
+                border: 1px solid #edf2f7;
+                border-radius: 20px;
+                background: white;
+            }
+            .menu-img {
+                width: 60px;
+                height: 60px;
+            }
+            .menu-info {
+                flex: 2;
+            }
+            .menu-action {
+                min-width: 110px;
+            }
+            .search-container {
+                margin: 0 15px 30px 15px;
+            }
+            .modal-body-layout {
+                flex-direction: column;
+                height: auto;
+                max-height: 90vh;
+            }
+            .modal-left {
+                min-height: 200px;
+                max-height: 250px;
+            }
+            .modal-right {
+                max-height: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg bg-white shadow-lg">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">KÜNEFEZADE</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Главная</a></li>
+                <li class="nav-item"><a class="nav-link active" href="{% url 'menu' %}">Меню</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'news' %}">Новости</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Контакты</a></li>
+            </ul>
+            <a href="{% url 'cart' %}" class="cart-badge btn btn-outline-warning" id="cart-link">
+                🛒 Корзина <span id="cart-counter" class="cart-count">0</span>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<main>
+    <header class="site-header site-menu-header">
+        <div class="container text-center">
+            <h1 class="text-white">Меню</h1>
+        </div>
+    </header>
+    
+    <!-- ПОИСК -->
+    <section class="section-padding pb-0">
+        <div class="container">
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск блюд... Название или описание">
+                <button id="searchClearBtn" class="search-clear" style="display: none;">✕</button>
+                <span class="search-icon">🔍</span>
+            </div>
+        </div>
+    </section>
+    
+    {% for category in categories %}
+    <section class="menu section-padding" id="category-{{ category.id }}" data-category-name="{{ category.name|lower }}">
+        <div class="container">
+            <h2 id="category-title-{{ category.id }}">{{ category.name }}</h2>
+            <div class="menu-table" id="category-items-{{ category.id }}">
+                {% for item in category.items.all %}
+                    {% if item.is_available %}
+                    <div class="menu-row" 
+                         data-item-id="{{ item.id }}" 
+                         data-item-name="{{ item.name|lower }}" 
+                         data-item-price="{{ item.price }}" 
+                         data-item-description="{{ item.description|default:''|lower|escapejs }}" 
+                         data-item-description-original="{{ item.description|default:''|escapejs }}"
+                         data-item-name-original="{{ item.name|escapejs }}"
+                         data-item-image="{% if item.image %}{{ item.image.url }}{% else %}{% static 'images/photo_2026-03-31_09-21-31.jpg' %}{% endif %}">
+                        <div class="menu-img">
+                            {% if item.image %}
+                                <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                            {% else %}
+                                <img src="{% static 'images/photo_2026-03-31_09-21-31.jpg' %}" alt="Нет фото">
+                            {% endif %}
+                        </div>
+                        <div class="menu-info">
+                            <h5 class="item-name">{{ item.name }}</h5>
+                            {% if item.description %}
+                                <p class="desc item-desc">{{ item.description|truncatechars:60 }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="menu-price">{{ item.price }} сом</div>
+                        <div class="menu-action">
+                            <button class="add-to-cart" data-id="{{ item.id }}" data-name="{{ item.name }}" data-price="{{ item.price }}">
+                                Добавить
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endfor %}
+    
+    <!-- Сообщение "ничего не найдено" -->
+    <div id="noResultsMessage" class="container" style="display: none;">
+        <div class="no-results">
+            <h3>😕 Ничего не найдено</h3>
+            <p>Попробуйте изменить поисковый запрос</p>
+        </div>
+    </div>
+</main>
+
+<!-- Модальное окно -->
+<div id="itemModal" class="modal-overlay">
+    <div class="modal-container">
+        <button class="modal-close">&times;</button>
+        <div class="modal-body-layout">
+            <!-- ЛЕВАЯ ЧАСТЬ (ФОТО) -->
+            <div class="modal-left">
+                <img id="modalImage" class="modal-img" src="" alt="">
+            </div>
+            <!-- ПРАВАЯ ЧАСТЬ (СКРОЛЛ) -->
+            <div class="modal-right">
+                <h2 id="modalName" class="modal-name"></h2>
+                <div id="modalDescription" class="modal-description"></div>
+                <div class="modal-price-section">
+                    <span id="modalPrice" class="modal-price"></span>
+                    <button id="modalAddToCart" class="modal-add-to-cart">
+                        🛒 Добавить в корзину
+                    </button>
+                </div>
+                <div class="reviews-section">
+                    <h5>📝 Отзывы</h5>
+                    <div id="reviewsList"></div>
+                    <div class="add-review-form">
+                        <h6>✍️ Оставить отзыв</h6>
+                        <form id="reviewForm">
+                            {% csrf_token %}
+                            <input type="hidden" id="reviewItemId" name="item_id">
+                            <div class="rating-select">
+                                <input type="radio" name="rating" value="5" id="star5"><label for="star5">★</label>
+                                <input type="radio" name="rating" value="4" id="star4"><label for="star4">★</label>
+                                <input type="radio" name="rating" value="3" id="star3"><label for="star3">★</label>
+                                <input type="radio" name="rating" value="2" id="star2"><label for="star2">★</label>
+                                <input type="radio" name="rating" value="1" id="star1"><label for="star1">★</label>
+                            </div>
+                            <textarea id="reviewText" rows="3" placeholder="Ваш отзыв..." required></textarea>
+                            <button type="submit" class="btn-submit-review">Отправить отзыв</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM загружен, инициализация поиска...');
+
+    // Элементы поиска
+    const searchInput = document.getElementById('searchInput');
+    const searchClearBtn = document.getElementById('searchClearBtn');
+    const noResultsMessage = document.getElementById('noResultsMessage');
+    
+    // Получаем все категории и элементы
+    const categories = document.querySelectorAll('.menu');
+    const allMenuRows = document.querySelectorAll('.menu-row');
+    
+    // Функция подсветки текста
+    function highlightText(text, query) {
+        if (!query || query.trim() === '') return text;
+        const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        return text.replace(regex, '<mark class="search-highlight">$1</mark>');
+    }
+    
+    // Функция поиска
+    function filterMenu() {
+        const query = searchInput.value.trim().toLowerCase();
+        let hasVisibleItems = false;
+        
+        // Показываем/скрываем кнопку очистки
+        if (query.length > 0) {
+            searchClearBtn.style.display = 'block';
+        } else {
+            searchClearBtn.style.display = 'none';
+        }
+        
+        // Перебираем все блюда
+        allMenuRows.forEach(row => {
+            const itemName = row.dataset.itemNameOriginal || row.querySelector('.item-name')?.textContent || '';
+            const itemDesc = row.dataset.itemDescriptionOriginal || '';
+            const itemNameElement = row.querySelector('.item-name');
+            const itemDescElement = row.querySelector('.item-desc');
+            
+            // Проверяем совпадение
+            const matchesName = itemName.toLowerCase().includes(query);
+            const matchesDesc = itemDesc.toLowerCase().includes(query);
+            const matches = query === '' || matchesName || matchesDesc;
+            
+            if (matches) {
+                row.classList.remove('hide-item');
+                hasVisibleItems = true;
+                
+                // Подсветка текста
+                if (query !== '' && itemNameElement) {
+                    const originalName = row.dataset.itemNameOriginal || itemName;
+                    itemNameElement.innerHTML = highlightText(escapeHtml(originalName), query);
+                } else if (itemNameElement && row.dataset.itemNameOriginal) {
+                    itemNameElement.innerHTML = escapeHtml(row.dataset.itemNameOriginal);
+                } else if (itemNameElement) {
+                    itemNameElement.innerHTML = escapeHtml(itemName);
+                }
+                
+                if (query !== '' && itemDescElement && row.dataset.itemDescriptionOriginal) {
+                    const originalDesc = row.dataset.itemDescriptionOriginal;
+                    if (originalDesc) {
+                        // Обрезаем до 60 символов для отображения
+                        let shortDesc = originalDesc.length > 60 ? originalDesc.substring(0, 60) + '...' : originalDesc;
+                        itemDescElement.innerHTML = highlightText(escapeHtml(shortDesc), query);
+                    }
+                } else if (itemDescElement && row.dataset.itemDescriptionOriginal) {
+                    const originalDesc = row.dataset.itemDescriptionOriginal;
+                    if (originalDesc) {
+                        let shortDesc = originalDesc.length > 60 ? originalDesc.substring(0, 60) + '...' : originalDesc;
+                        itemDescElement.innerHTML = escapeHtml(shortDesc);
+                    }
+                }
+            } else {
+                row.classList.add('hide-item');
+            }
+        });
+        
+        // Скрываем/показываем категории и показываем сообщение "ничего не найдено"
+        let anyVisibleCategory = false;
+        categories.forEach(category => {
+            const itemsInCategory = category.querySelectorAll('.menu-row');
+            const visibleItems = category.querySelectorAll('.menu-row:not(.hide-item)');
+            const categoryTitle = category.querySelector('h2');
+            
+            if (visibleItems.length === 0) {
+                category.classList.add('hide-category');
+                if (categoryTitle) categoryTitle.style.opacity = '0.5';
+            } else {
+                category.classList.remove('hide-category');
+                if (categoryTitle) categoryTitle.style.opacity = '1';
+                anyVisibleCategory = true;
+            }
+        });
+        
+        // Показываем сообщение "ничего не найдено"
+        if (!hasVisibleItems && query !== '') {
+            noResultsMessage.style.display = 'block';
+        } else {
+            noResultsMessage.style.display = 'none';
+        }
+    }
+    
+    // Очистка поиска
+    function clearSearch() {
+        searchInput.value = '';
+        filterMenu();
+        searchInput.focus();
+    }
+    
+    // Обработчики событий
+    if (searchInput) {
+        searchInput.addEventListener('input', filterMenu);
+        searchInput.addEventListener('keyup', function(e) {
+            if (e.key === 'Escape') {
+                clearSearch();
+            }
+        });
+    }
+    
+    if (searchClearBtn) {
+        searchClearBtn.addEventListener('click', clearSearch);
+    }
+    
+    // Сохраняем оригинальные названия и описания в dataset
+    allMenuRows.forEach(row => {
+        const nameElement = row.querySelector('.item-name');
+        const descElement = row.querySelector('.item-desc');
+        
+        if (nameElement) {
+            row.dataset.itemNameOriginal = nameElement.textContent;
+        }
+        if (descElement && row.dataset.itemDescription) {
+            // уже есть в dataset из шаблона
+        }
+    });
+    
+    // ========== ОСТАЛЬНОЙ КОД ДЛЯ КОРЗИНЫ ==========
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+    
+    function showToast(msg, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = 'toast-message';
+        toast.style.backgroundColor = isError ? '#ef4444' : '#10b981';
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+    
+    function updateCartCount(count) {
+        const counter = document.getElementById('cart-counter');
+        if (counter) counter.textContent = count;
+    }
+    
+    async function loadCartCount() {
+        try {
+            const resp = await fetch('/cart/count/api/');
+            const data = await resp.json();
+            if (data.success) updateCartCount(data.count);
+        } catch(e) { console.error('Ошибка загрузки счетчика:', e); }
+    }
+    
+    let currentItem = null;
+    
+    async function loadReviews(itemId) {
+        const container = document.getElementById('reviewsList');
+        if (!container) return;
+        container.innerHTML = '<div style="text-align:center; padding:20px;">⏳ Загрузка...</div>';
+        try {
+            const resp = await fetch(`/api/reviews/${itemId}/`);
+            const data = await resp.json();
+            if (data.success && data.reviews?.length) {
+                container.innerHTML = data.reviews.map(r => `
+                    <div class="review-item">
+                        <div><span class="review-author">👤 ${escapeHtml(r.author_name)}</span>
+                        <span class="review-rating">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span></div>
+                        <div class="review-text">${escapeHtml(r.text)}</div>
+                        <div class="review-date">📅 ${new Date(r.created_at).toLocaleDateString()}</div>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<div style="text-align:center; padding:20px; color:#9ca3af;">📝 Пока нет отзывов. Будьте первым!</div>';
+            }
+        } catch(e) {
+            container.innerHTML = '<div style="text-align:center; padding:20px; color:#ef4444;">❌ Ошибка загрузки</div>';
+        }
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);
+    }
+    
+    function openModal(id, name, desc, price, img) {
+        currentItem = { id, name, price };
+        document.getElementById('modalName').textContent = name;
+        document.getElementById('modalDescription').textContent = desc || 'Нет описания';
+        document.getElementById('modalPrice').textContent = price + ' сом';
+        document.getElementById('modalImage').src = img;
+        document.getElementById('reviewItemId').value = id;
+        const modalBtn = document.getElementById('modalAddToCart');
+        modalBtn.disabled = false;
+        modalBtn.textContent = '🛒 Добавить в корзину';
+        loadReviews(id);
+        document.getElementById('itemModal').classList.add('active');
+    }
+    
+    document.querySelectorAll('.menu-row').forEach(row => {
+        row.addEventListener('click', (e) => {
+            if (e.target.classList.contains('add-to-cart')) return;
+            openModal(
+                row.dataset.itemId,
+                row.dataset.itemNameOriginal || row.dataset.itemName,
+                row.dataset.itemDescriptionOriginal || row.dataset.itemDescription,
+                row.dataset.itemPrice,
+                row.dataset.itemImage
+            );
+        });
+    });
+    
+    document.getElementById('modalAddToCart')?.addEventListener('click', async () => {
+        if (!currentItem) return;
+        const btn = document.getElementById('modalAddToCart');
+        btn.disabled = true;
+        btn.textContent = '⏳ Добавление...';
+        try {
+            const resp = await fetch('/cart/add/api/', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken},
+                body: JSON.stringify({ item_id: currentItem.id, quantity: 1 })
+            });
+            const data = await resp.json();
+            if (data.success) {
+                showToast(`✅ ${currentItem.name} добавлен в корзину`);
+                updateCartCount(data.cart_count);
+                btn.textContent = '✓ Добавлено!';
+                setTimeout(() => {
+                    btn.textContent = '🛒 Добавить в корзину';
+                    btn.disabled = false;
+                }, 1500);
+            } else {
+                showToast(`❌ ${data.error || 'Ошибка'}`, true);
+                btn.disabled = false;
+                btn.textContent = '🛒 Добавить в корзину';
+            }
+        } catch(e) {
+            showToast('❌ Ошибка при добавлении', true);
+            btn.disabled = false;
+            btn.textContent = '🛒 Добавить в корзину';
+        }
+    });
+    
+    document.querySelectorAll('.add-to-cart').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const b = btn;
+            const id = b.dataset.id, name = b.dataset.name, orig = b.textContent;
+            b.disabled = true;
+            b.textContent = '...';
+            try {
+                const resp = await fetch('/cart/add/api/', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken},
+                    body: JSON.stringify({ item_id: id, quantity: 1 })
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    showToast(`✅ ${name} добавлен`);
+                    updateCartCount(data.cart_count);
+                    b.textContent = '✓';
+                    setTimeout(() => { b.textContent = orig; b.disabled = false; }, 1000);
+                } else {
+                    showToast(`❌ ${data.error || 'Ошибка'}`, true);
+                    b.textContent = orig;
+                    b.disabled = false;
+                }
+            } catch(e) {
+                showToast('❌ Ошибка', true);
+                b.textContent = orig;
+                b.disabled = false;
+            }
+        });
+    });
+    
+    document.getElementById('reviewForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const itemId = document.getElementById('reviewItemId').value;
+        const rating = document.querySelector('input[name="rating"]:checked')?.value;
+        const text = document.getElementById('reviewText').value.trim();
+        if (!rating) { showToast('⭐ Поставьте оценку', true); return; }
+        if (!text) { showToast('✏️ Напишите отзыв', true); return; }
+        const btn = document.querySelector('#reviewForm button[type="submit"]');
+        const orig = btn.textContent;
+        btn.textContent = 'Отправка...';
+        btn.disabled = true;
+        try {
+            const resp = await fetch('/api/reviews/add/', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken},
+                body: JSON.stringify({ item_id: parseInt(itemId), rating: parseInt(rating), text })
+            });
+            const data = await resp.json();
+            if (data.success) {
+                showToast('✅ Спасибо! Отзыв будет опубликован после проверки');
+                document.getElementById('reviewText').value = '';
+                document.querySelectorAll('input[name="rating"]').forEach(r => r.checked = false);
+                loadReviews(itemId);
+            } else {
+                showToast(`❌ ${data.error || 'Ошибка'}`, true);
+            }
+        } catch(e) {
+            showToast('❌ Ошибка при отправке', true);
+        } finally {
+            btn.textContent = orig;
+            btn.disabled = false;
+        }
+    });
+    
+    const modal = document.getElementById('itemModal');
+    document.querySelector('.modal-close')?.addEventListener('click', () => modal.classList.remove('active'));
+    modal?.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal?.classList.contains('active')) modal.classList.remove('active'); });
+    
+    loadCartCount();
+});
+</script>
+
+<footer class="site-footer section-padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h4 class="text-white mb-4 me-5">Kunefezade</h4>
+            </div>
+            <div class="col-lg-4 col-md-7 col-xs-12 tooplate-mt30">
+                <h6 class="text-white mb-lg-4 mb-3">Адрес</h6>
+                <p>Бишкек, Джал-29, 6/1</p>
+            </div>
+            <div class="col-lg-4 col-md-5 col-xs-12 tooplate-mt30">
+                <h6 class="text-white mb-lg-4 mb-3">Ежедневно</h6>
+                <p>08:00-02:00</p>
+                <p>Tel: 010-02-0340</p>
+            </div>
+            <div class="col-lg-4 col-md-6 col-xs-12 tooplate-mt30">
+                <h6 class="text-white mb-lg-4 mb-3">Social</h6>
+                <ul class="social-icon">
+                    <li><a href="https://www.instagram.com/kunefezade.bishkek" class="social-icon-link bi-instagram"></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>Личный кабинет</title>
+</head>
+<body>
+
+<h2>Личный кабинет</h2>
+
+<p>Пользователь: {{ user.username }}</p>
+
+<hr>
+
+<h3>Мои заказы</h3>
+
+{% for order in orders %}
+    <div>
+        <p>Заказ #{{ order.id }}</p>
+        <p>Статус: {{ order.status }}</p>
+        <p>Сумма: {{ order.total_price }} сом</p>
+    </div>
+{% empty %}
+    <p>Заказов нет</p>
+{% endfor %}
+
+</body>
+</html>

@@ -1,0 +1,133 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Kunefezade - News Page</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tooplate-crispy-kitchen.css' %}">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg bg-white shadow-lg">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">KÜNEFEZADE</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Главная</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'menu' %}">Меню</a></li>
+                <li class="nav-item"><a class="nav-link active" href="{% url 'news' %}">Новости</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Контакты</a></li>
+            </ul>
+        </div>
+
+        <div class="d-none d-lg-block">
+            <button type="button" class="custom-btn btn btn-danger" data-bs-toggle="modal" data-bs-target="#BookingModal">Бронирование</button>
+        </div>
+    </div>
+</nav>
+
+<main>
+
+<!-- HEADER -->
+<header class="site-header site-news-detail-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+            </div>
+        </div>
+    </div>
+</header>
+
+<h2>{{ title }}</h2>
+
+<div class="container">
+    <div class="row">
+        {% for item in images %}
+        <div class="col-lg-4 col-12 mb-4">
+            <img src="{% static item.img %}" class="img-fluid" alt="">
+            <p class="text-center mt-2">{{ item.text }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="site-footer section-padding bg-dark text-white">
+    <div class="container text-center">
+        <p>Kunefezade</p>
+    </div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal fade" id="BookingModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="mb-0">Бронирование</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-flex flex-column justify-content-center">
+                <form class="booking-form row" action="#" method="post">
+                    {% csrf_token %}
+                    <div class="col-lg-6 col-12">
+                        <label for="name" class="form-label">Имя</label>
+                        <input type="text" name="name" id="name" class="form-control" required>
+                    </div>
+                    <div class="col-lg-6 col-12">
+                        <label for="email" class="form-label">Эл.почта</label>
+                        <input type="email" name="email" id="email" class="form-control" required>
+                    </div>
+                    <div class="col-lg-6 col-12">
+                        <label for="phone" class="form-label">Номер телефона</label>
+                        <input type="tel" name="phone" id="phone" class="form-control" placeholder="123-456-7890">
+                    </div>
+                    <div class="col-lg-6 col-12">
+                        <label for="people" class="form-label">Количество гостей</label>
+                        <input type="text" name="people" id="people" class="form-control">
+                    </div>
+                    <div class="col-lg-6 col-12">
+                        <label for="date" class="form-label">Дата</label>
+                        <input type="date" name="date" id="date" class="form-control">
+                    </div>
+                    <div class="col-lg-6 col-12">
+                        <label for="time" class="form-label">Время</label>
+                        <select class="form-select" name="time" id="time">
+                            <option value="5" selected>5:00 PM</option>
+                            <option value="6">6:00 PM</option>
+                            <option value="7">7:00 PM</option>
+                            <option value="8">8:00 PM</option>
+                            <option value="9">9:00 PM</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mt-3">
+                        <button type="submit" class="form-control btn btn-danger">Бронирование</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JS -->
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/custom.js' %}"></script>
+
+</body>
+</html>

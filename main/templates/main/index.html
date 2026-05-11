@@ -1,0 +1,460 @@
+{% load static %}
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kunefezade - {% block title %}Главная{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/bootstrap-icons.css' %}" rel="stylesheet">
+    <link href="{% static 'css/tooplate-crispy-kitchen.css' %}" rel="stylesheet">
+
+    <style>
+
+        .carousel-image{
+            height:650px;
+            object-fit:cover;
+        }
+
+        @media (max-width:991px){
+
+            .navbar-collapse{
+                margin-top:1rem;
+            }
+
+            .d-flex{
+                margin-top:1rem;
+                flex-wrap:wrap;
+                justify-content:center;
+            }
+        }
+
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg bg-white shadow-lg">
+
+    <div class="container">
+
+        <!-- LOGO -->
+        <a class="navbar-brand" href="{% url 'home' %}">
+            KÜNEFEZADE
+        </a>
+
+        <!-- MOBILE BUTTON -->
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
+
+            <span class="navbar-toggler-icon"></span>
+
+        </button>
+
+        <!-- MENU -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+
+            <ul class="navbar-nav mx-auto">
+
+                <li class="nav-item">
+
+                    <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+                       href="{% url 'home' %}">
+
+                        Главная
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link {% if request.resolver_match.url_name == 'menu' %}active{% endif %}"
+                       href="{% url 'menu' %}">
+
+                        Меню
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link {% if request.resolver_match.url_name == 'news' %}active{% endif %}"
+                       href="{% url 'news' %}">
+
+                        Новости
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}"
+                       href="{% url 'contact' %}">
+
+                        Контакты
+
+                    </a>
+
+                </li>
+
+            </ul>
+
+        </div>
+
+        <!-- RESERVATION BUTTON -->
+        <div class="d-flex align-items-center">
+
+            <a href="{% url 'reservation' %}"
+               class="custom-btn btn btn-danger">
+
+                Бронирование
+
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+<!-- MAIN -->
+<main>
+
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+
+    <div class="container">
+
+        <div class="row">
+
+            <!-- LEFT -->
+            <div class="col-lg-5 col-12 m-auto">
+
+                <div class="heroText">
+
+                    <h1 class="text-white mb-lg-5 mb-3">
+                        Готовим с душой!
+                    </h1>
+
+                    <div class="c-reviews my-3 d-flex flex-wrap align-items-center">
+
+                        <div class="d-flex flex-wrap align-items-center">
+
+                            <h4 class="text-white mb-0 me-3">
+                                4.4/5
+                            </h4>
+
+                            <div class="reviews-stars">
+
+                                <i class="bi-star-fill reviews-icon"></i>
+                                <i class="bi-star-fill reviews-icon"></i>
+                                <i class="bi-star-fill reviews-icon"></i>
+                                <i class="bi-star-fill reviews-icon"></i>
+                                <i class="bi-star reviews-icon"></i>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- RIGHT -->
+            <div class="col-lg-7 col-12">
+
+                <div id="carouselExampleCaptions"
+                     class="carousel carousel-fade hero-carousel slide"
+                     data-bs-ride="carousel">
+
+                    <div class="carousel-inner">
+
+                        <!-- SLIDE 1 -->
+                        <div class="carousel-item active">
+
+                            <div class="carousel-image-wrap">
+
+                                <img src="{% static 'images/slide/photo_2026-03-29_15-04-34.jpg' %}"
+                                     class="img-fluid carousel-image"
+                                     alt="">
+
+                            </div>
+
+                            <div class="carousel-caption">
+
+                                <span class="text-white">
+
+                                    <i class="bi-geo-alt me-2"></i>
+
+                                    Джал, Бишкек
+
+                                </span>
+
+                                <h4 class="hero-text">
+                                    Турецкий ресторан
+                                </h4>
+
+                            </div>
+
+                        </div>
+
+                        <!-- SLIDE 2 -->
+                        <div class="carousel-item">
+
+                            <div class="carousel-image-wrap">
+
+                                <img src="{% static 'images/slide/photo_2026-03-29_14-41-25.jpg' %}"
+                                     class="img-fluid carousel-image"
+                                     alt="">
+
+                            </div>
+
+                            <div class="carousel-caption">
+
+                                <span class="text-white">
+
+                                    <i class="bi-geo-alt me-2"></i>
+
+                                    Джал, Бишкек
+
+                                </span>
+
+                                <h4 class="hero-text">
+                                    Турецкий ресторан
+                                </h4>
+
+                            </div>
+
+                        </div>
+
+                        <!-- SLIDE 3 -->
+                        <div class="carousel-item">
+
+                            <div class="carousel-image-wrap">
+
+                                <img src="{% static 'images/slide/photo_2026-03-29_14-01-05.jpg' %}"
+                                     class="img-fluid carousel-image"
+                                     alt="">
+
+                            </div>
+
+                            <div class="carousel-caption">
+
+                                <span class="text-white">
+
+                                    <i class="bi-geo-alt me-2"></i>
+
+                                    Джал, Бишкек
+
+                                </span>
+
+                                <h4 class="hero-text">
+                                    Турецкий ресторан
+                                </h4>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- PREV -->
+                    <button class="carousel-control-prev"
+                            type="button"
+                            data-bs-target="#carouselExampleCaptions"
+                            data-bs-slide="prev">
+
+                        <span class="carousel-control-prev-icon"></span>
+
+                    </button>
+
+                    <!-- NEXT -->
+                    <button class="carousel-control-next"
+                            type="button"
+                            data-bs-target="#carouselExampleCaptions"
+                            data-bs-slide="next">
+
+                        <span class="carousel-control-next-icon"></span>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- VIDEO -->
+    <div class="video-wrap">
+
+        <video autoplay loop muted class="custom-video">
+
+            <source src="{% static 'video/7218f30236524a7ea7ec5f34f1efcf6b.mp4' %}"
+                    type="video/mp4">
+
+        </video>
+
+    </div>
+
+    <div class="overlay"></div>
+
+</section>
+
+<!-- SPECIAL MENU -->
+<section class="menu section-padding">
+
+    <div class="container">
+
+        <div class="row">
+
+            <div class="col-12">
+
+                <h2 class="text-center mb-lg-5 mb-4">
+                    Специальное меню
+                </h2>
+
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-12">
+
+                <div class="menu-thumb">
+
+                    <div class="menu-image-wrap">
+
+                        <img src="{% static 'images/kebap/photo_2026-03-31_14-17-17.jpg' %}"
+                             class="img-fluid menu-image"
+                             alt="">
+
+                        <span class="menu-tag bg-warning">
+                            600 сом
+                        </span>
+
+                    </div>
+
+                    <div class="menu-info d-flex flex-wrap align-items-center">
+
+                        <h4 class="mb-0">
+                            Кебаб Кунефезаде
+                        </h4>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+</main>
+
+<!-- FOOTER -->
+<footer class="site-footer section-padding">
+
+    <div class="container">
+
+        <div class="row">
+
+            <div class="col-12">
+
+                <h4 class="text-white mb-4 me-5">
+                    Kunefezade
+                </h4>
+
+            </div>
+
+            <div class="col-lg-4 col-md-7 col-xs-12 tooplate-mt30">
+
+                <h6 class="text-white mb-lg-4 mb-3">
+                    Адрес
+                </h6>
+
+                <p>
+                    Бишкек, Джал-29, 6/1
+                </p>
+
+            </div>
+
+            <div class="col-lg-4 col-md-5 col-xs-12 tooplate-mt30">
+
+                <h6 class="text-white mb-lg-4 mb-3">
+                    Ежедневно
+                </h6>
+
+                <p>
+                    08:00-02:00
+                </p>
+
+                <p>
+
+                    Tel:
+
+                    <a href="https://wa.me/708869730"
+                       class="tel-link">
+
+                        +996708869730
+
+                    </a>
+
+                </p>
+
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-xs-12 tooplate-mt30">
+
+                <h6 class="text-white mb-lg-4 mb-3">
+                    Social
+                </h6>
+
+                <ul class="social-icon">
+
+                    <li>
+
+                        <a href="https://www.instagram.com/kunefezade.bishkek?igsh=c211bzhmMG9kOW90"
+                           class="social-icon-link bi-instagram">
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</footer>
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/custom.js' %}"></script>
+
+</body>
+</html>

@@ -1,0 +1,21 @@
+{% extends 'main/index.html' %}
+{% load static %}
+
+{% block title %}Заказ оформлен{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card shadow text-center">
+        <div class="card-header bg-success text-white">
+            <h3 class="mb-0">✅ Заказ успешно оформлен!</h3>
+        </div>
+        <div class="card-body">
+            <h4>Номер заказа: #{{ order.id }}</h4>
+            <p>Сумма: {{ order.total_price }} сом</p>
+            <p>Статус: {{ order.get_status_display }}</p>
+            <a href="{% url 'accounts:order_history' %}" class="btn btn-warning">📦 История заказов</a>
+            <a href="{% url 'menu' %}" class="btn btn-outline-warning">🍽 Продолжить покупки</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

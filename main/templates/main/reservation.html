@@ -1,0 +1,146 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бронирование столика | Crispy Kitchen</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tooplate-crispy-kitchen.css' %}">
+    <style>
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .errorlist {
+            color: #dc3545;
+            list-style: none;
+            padding-left: 0;
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
+        }
+        .alert {
+            margin-bottom: 1.5rem;
+        }
+        .booking-card {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .form-control:focus {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            transition: all 0.3s ease;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+            transform: translateY(-2px);
+        }
+        .required-field::after {
+            content: "*";
+            color: #dc3545;
+            margin-left: 4px;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg bg-white shadow-lg">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">
+            Crispy Kitchen
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}">Главная</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'menu' %}">Меню</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'reservation' %}">Бронирование</a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'contact' %}">Контакты</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container mt-5 mb-5">
+    <div class="booking-card">
+        <h2 class="mb-2 text-center">Бронирование столика</h2>
+        <p class="text-center text-muted mb-4">Забронируйте столик в ресторане </p>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                    <i class="bi bi-{% if message.tags == 'success' %}check-circle{% else %}exclamation-triangle{% endif %}"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        <form method="post" class="p-4 shadow rounded bg-light" action="{% url 'reservation' %}">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}" class="form-label fw-bold {% if field.field.required %}required-field{% endif %}">
+                        {{ field.label }}
+                    </label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% if field.errors %}
+                        <ul class="errorlist">
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn btn-danger btn-lg">
+                    <i class="bi bi-calendar-check"></i> Забронировать столик
+                </button>
+            </div>
+        </form>
+        <div class="text-center mt-4">
+            <small class="text-muted">
+                <i class="bi bi-info-circle"></i> После бронирования наш администратор свяжется с вами для подтверждения в течение 30 минут.
+            </small>
+        </div>
+        <div class="text-center mt-3">
+            <a href="{% url 'home' %}" class="text-decoration-none">
+                ← Вернуться на главную
+            </a>
+        </div>
+    </div>
+</div>
+<!-- JS -->
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script>
+    setTimeout(function() {
+        var alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            var bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+</script>
+
+</body>
+</html>
